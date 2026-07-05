@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Speed Camera</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Live Speed Camera</h1>
+            <p>Point your camera at a vehicle plate. Detection works best when the plate is clearly visible.</p>
+            <a href="/stop" class="back-link">&larr; Stop Camera &amp; Back</a>
+            <a href="/upload" class="back-link" style="margin-left:16px">Upload Photo &rarr;</a>
+            <a href="/manual" class="back-link" style="margin-left:16px">Manual Entry &rarr;</a>
+            <a href="/fines" class="back-link" style="margin-left:16px">View Fines &rarr;</a>
+        </header>
+
+        <div class="split-layout">
+            <div class="stream-box">
+                <img id="feed" src="" alt="Live Feed" style="display:none">
+                <div id="status" class="status-msg">Connecting to camera...</div>
+            </div>
+
+            <div class="panel">
+                <h3>Live Data</h3>
+                <div class="data-row">
+                    <span class="label">Plate</span>
+                    <span class="value" id="d-plate">---</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Speed</span>
+                    <span class="value" id="d-speed">0.0 km/h</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Speed Limit</span>
+                    <span class="value" id="d-limit">60 km/h</span>
+                </div>
+                <div class="data-row" id="speed-bar-wrap">
+                    <span class="label">Status</span>
+                    <div class="speed-bar-bg">
+                        <div class="speed-bar-fill" id="d-bar"></div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top:20px">Violations</h3>
+                <div class="data-row">
+                    <span class="label">Total Fines</span>
+                    <span class="value" id="d-fines">0</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Unpaid</span>
+                    <span class="value" id="d-unpaid">0</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Collected</span>
+                    <span class="value" id="d-collected">$0</span>
+                </div>
+
+                <div id="violation-banner" class="violation-hidden">
+                    <strong>VIOLATION!</strong>
+                    <span id="v-plate"></span> &mdash; $<span id="v-amount"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const img = document.getElementById("feed");
+        const statusEl = document.getElementById("status");
+
+        function upd(el, v) { const e = document.getElementById(el); if (e) e.textContent = v; }
+
+        async function fetchFrame() {
+            try {
+                const r = await fetch("/frame?t=" + Date.now());
+                if (!r.ok) {
+                    let t = await r.text();
+                    try { const j = JSON.parse(t); t = j.error || t; } catch(_) {}
+                    throw new Error(t.substring(0, 80));
+                }
+                const blob = await r.blob();
+                img.src = URL.createObjectURL(blob);
+                img.style.display = "block";
+                statusEl.style.display = "none";
+            } catch (e) {
+                statusEl.textContent = "Camera: " + e.message;
+                statusEl.style.display = "block";
+                img.style.display = "none";
+            }
+        }
+
+        async function fetchStatus() {
+            try {
+                const r = await fetch("/status?t=" + Date.now());
+                if (!r.ok) return;
+                const d = await r.json();
+                upd("d-plate", d.plate || "---");
+                upd("d-speed", (d.speed || 0) + " km/h");
+                upd("d-limit", (d.limit || 60) + " km/h");
+                upd("d-fines", d.fines || 0);
+                if (d.stats) {
+                    upd("d-unpaid", d.stats.unpaid || 0);
+                    upd("d-collected", "$" + (d.stats.collected || 0));
+                }
+                const pct = Math.min(100, (d.speed || 0) / (d.limit || 60) * 100);
+                const bar = document.getElementById("d-bar");
+                if (bar) {
+                    bar.style.width = pct + "%";
+                    bar.style.background = pct > 100 ? "#ef4444" : pct > 80 ? "#f59e0b" : "#22c55e";
+                }
+            } catch(_) {}
+        }
+
+        setInterval(fetchFrame, 400);
+        setInterval(fetchStatus, 600);
+        fetchFrame();
+        fetchStatus();
+    </script>
+</body>
+</html>

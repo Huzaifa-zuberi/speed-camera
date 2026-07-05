@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Image</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Upload Image</h1>
+            <p>Upload a photo of a license plate to detect and read it</p>
+            <a href="/" class="back-link">&larr; Home</a>
+            <a href="/manual" class="back-link" style="margin-left:16px">Manual Entry &rarr;</a>
+        </header>
+
+        <div class="upload-box">
+            <form method="post" enctype="multipart/form-data">
+                <p style="margin-bottom:16px;color:#94a3b8">Take a clear photo of the license plate</p>
+                <label class="file-label">
+                    Choose Image
+                    <input type="file" name="file" accept="image/*" required onchange="this.form.submit()">
+                </label>
+            </form>
+        </div>
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if img %}
+        <div class="result">
+            <div class="result-col">
+                <h3>Processed Image</h3>
+                <img src="data:image/jpeg;base64,{{ img }}" alt="Result">
+            </div>
+            <div class="result-col">
+                <h3>Result</h3>
+                {% if text %}
+                <div class="upload-result">
+                    <div class="plate-big">{{ text }}</div>
+                    <p style="color:#22c55e;margin-top:8px">Plate detected and read successfully!</p>
+                    <a href="/live" class="btn-primary" style="display:inline-block;margin-top:16px">Go to Live Camera</a>
+                    <a href="/manual" class="btn-secondary" style="display:inline-block;margin-top:8px">Enter Manually</a>
+                </div>
+                {% else %}
+                <div class="upload-result">
+                    <p style="color:#f59e0b">No license plate detected in this image.</p>
+                    <p style="color:#94a3b8;font-size:0.85rem;margin-top:8px">Try a clearer image with the plate clearly visible.</p>
+                    <a href="/upload" class="btn-secondary" style="display:inline-block;margin-top:16px">Try Another</a>
+                    <a href="/manual" class="btn-secondary" style="display:inline-block;margin-top:8px">Enter Manually</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

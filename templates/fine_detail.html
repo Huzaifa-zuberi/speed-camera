@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fine {{ fine.id }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Fine #{{ fine.id }}</h1>
+            <a href="/fines" class="back-link">&larr; All Fines</a>
+            <a href="/live" class="back-link" style="margin-left:16px">Camera &rarr;</a>
+        </header>
+
+        <div class="fine-card">
+            <div class="fine-card-header {{ 'header-unpaid' if fine.status == 'UNPAID' else 'header-paid' }}">
+                <span class="fine-status-badge">{{ fine.status }}</span>
+                <span class="fine-amount-large">${{ fine.amount }}</span>
+            </div>
+
+            <div class="fine-card-body">
+                <div class="fine-detail-row">
+                    <span class="detail-label">Fine ID</span>
+                    <span class="detail-value">{{ fine.id }}</span>
+                </div>
+                <div class="fine-detail-row">
+                    <span class="detail-label">License Plate</span>
+                    <span class="detail-value plate-display">{{ fine.plate }}</span>
+                </div>
+                <div class="fine-detail-row">
+                    <span class="detail-label">Recorded Speed</span>
+                    <span class="detail-value">{{ fine.speed }} km/h</span>
+                </div>
+                <div class="fine-detail-row">
+                    <span class="detail-label">Speed Limit</span>
+                    <span class="detail-value">{{ fine.limit }} km/h</span>
+                </div>
+                <div class="fine-detail-row">
+                    <span class="detail-label">Excess</span>
+                    <span class="detail-value {{ 'text-danger' if fine.excess > 20 }}">{{ fine.excess }} km/h</span>
+                </div>
+                <div class="fine-detail-row">
+                    <span class="detail-label">Date &amp; Time</span>
+                    <span class="detail-value">{{ fine.timestamp }}</span>
+                </div>
+                <div class="fine-detail-row">
+                    <span class="detail-label">Status</span>
+                    <span class="detail-value">
+                        <span class="badge {{ 'badge-unpaid' if fine.status == 'UNPAID' else 'badge-paid' }}">
+                            {{ fine.status }}
+                        </span>
+                    </span>
+                </div>
+            </div>
+
+            {% if fine.vehicle %}
+            <div class="fine-card-body" style="border-top:1px solid #334155">
+                <h3 style="color:#94a3b8;font-size:0.85rem;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">
+                    Vehicle Details
+                    {% if fine.vehicle.source and fine.vehicle.source != "mock" %}
+                    <span class="badge badge-paid" style="font-size:0.65rem;margin-left:8px">via {{ fine.vehicle.source }}</span>
+                    {% else %}
+                    <span class="badge badge-unpaid" style="font-size:0.65rem;margin-left:8px">Local Data</span>
+                    {% endif %}
+                </h3>
+                <div class="fine-detail-row">
+                    <span class="detail-label">Owner</span>
+                    <span class="detail-value">{{ fine.vehicle.owner }}</span>
+                </div>
+                <div class="fine-detail-row">
+                    <span class="detail-label">Make</span>
+                    <span class="detail-value">{{ fine.vehicle.make }}</span>
+                </div>
+                <div class="fine-detail-row">
+                    <span class="detail-label">Model</span>
+                    <span class="detail-value">{{ fine.vehicle.model }}</span>
+                </div>
+                <div class="fine-detail-row">
+                    <span class="detail-label">Color</span>
+                    <span class="detail-value">{{ fine.vehicle.color }}</span>
+                </div>
+                <div class="fine-detail-row">
+                    <span class="detail-label">Registration</span>
+                    <span class="detail-value">{{ fine.vehicle.registration_date }}</span>
+                </div>
+                <div class="fine-detail-row">
+                    <span class="detail-label">Engine No.</span>
+                    <span class="detail-value" style="font-family:monospace;font-size:0.8rem">{{ fine.vehicle.engine_no }}</span>
+                </div>
+                <div class="fine-detail-row">
+                    <span class="detail-label">Chassis No.</span>
+                    <span class="detail-value" style="font-family:monospace;font-size:0.8rem">{{ fine.vehicle.chassis_no }}</span>
+                </div>
+                <div class="fine-detail-row">
+                    <span class="detail-label">Reg Status</span>
+                    <span class="detail-value">
+                        <span class="badge {{ 'badge-paid' if fine.vehicle.status == 'Active' else 'badge-unpaid' }}">
+                            {{ fine.vehicle.status }}
+                        </span>
+                    </span>
+                </div>
+                <div class="fine-detail-row">
+                    <span class="detail-label">Address</span>
+                    <span class="detail-value" style="font-size:0.8rem;max-width:250px;text-align:right">{{ fine.vehicle.address }}</span>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="fine-card-actions">
+                {% if fine.status == 'UNPAID' %}
+                <a href="/pay/{{ fine.id }}" class="btn-primary">Mark as Paid</a>
+                {% endif %}
+                <button onclick="window.print()" class="btn-secondary">Print</button>
+                <button onclick="document.getElementById('correction-form').style.display='block'" class="btn-secondary">Correct Details</button>
+            </div>
+
+            <div id="correction-form" style="display:none;border-top:1px solid #334155;padding:20px">
+                <h3 style="color:#fbbf24;font-size:0.9rem;margin-bottom:12px">Correct Vehicle Details</h3>
+                <p style="color:#94a3b8;font-size:0.8rem;margin-bottom:16px">
+                    SMS <strong>{{ fine.plate }}</strong> to <strong>9966</strong> (Sindh) or <strong>8785</strong> (Punjab) to get correct details, then enter them below.
+                </p>
+                <form method="post" action="/update-vehicle/{{ fine.id }}">
+                    <div class="form-row" style="grid-template-columns:1fr 1fr">
+                        <div class="form-group"><label>Owner Name</label><input name="owner" class="form-input" value="{{ fine.vehicle.owner if fine.vehicle else '' }}"></div>
+                        <div class="form-group"><label>Make (e.g. Honda, Yamaha)</label><input name="make" class="form-input" value="{{ fine.vehicle.make if fine.vehicle else '' }}"></div>
+                    </div>
+                    <div class="form-row" style="grid-template-columns:1fr 1fr">
+                        <div class="form-group"><label>Model</label><input name="model" class="form-input" value="{{ fine.vehicle.model if fine.vehicle else '' }}"></div>
+                        <div class="form-group"><label>Color</label><input name="color" class="form-input" value="{{ fine.vehicle.color if fine.vehicle else '' }}"></div>
+                    </div>
+                    <div class="form-row" style="grid-template-columns:1fr 1fr">
+                        <div class="form-group"><label>Engine No.</label><input name="engine_no" class="form-input" value="{{ fine.vehicle.engine_no if fine.vehicle else '' }}"></div>
+                        <div class="form-group"><label>Chassis No.</label><input name="chassis_no" class="form-input" value="{{ fine.vehicle.chassis_no if fine.vehicle else '' }}"></div>
+                    </div>
+                    <div class="form-row" style="grid-template-columns:1fr 1fr">
+                        <div class="form-group"><label>Registration Date</label><input name="registration_date" class="form-input" value="{{ fine.vehicle.registration_date if fine.vehicle else '' }}"></div>
+                        <div class="form-group"><label>Status (Active/Expired)</label><input name="status" class="form-input" value="{{ fine.vehicle.status if fine.vehicle else '' }}"></div>
+                    </div>
+                    <div class="form-row" style="grid-template-columns:1fr 1fr 1fr">
+                        <div class="form-group"><label>City</label><input name="city" class="form-input" value="{{ fine.vehicle.city if fine.vehicle else '' }}"></div>
+                        <div class="form-group"><label>Province</label><input name="province" class="form-input" value="{{ fine.vehicle.province if fine.vehicle else '' }}"></div>
+                        <div class="form-group"><label>Address</label><input name="address" class="form-input" value="{{ fine.vehicle.address if fine.vehicle else '' }}"></div>
+                    </div>
+                    <button type="submit" class="btn-primary" style="margin-top:12px">Save Corrections</button>
+                    <button type="button" onclick="document.getElementById('correction-form').style.display='none'" class="btn-secondary">Cancel</button>
+                </form>
+            </div>
+
+            <div class="fine-note">
+                <p>This is a computer-generated fine notice. Payment must be made within 30 days.</p>
+                <p>Disputes can be filed at the traffic department within 14 days.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fine Records</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Fine Records</h1>
+            <p>All issued speeding violations with vehicle owner details</p>
+            <a href="/" class="back-link">&larr; Home</a>
+            <a href="/live" class="back-link" style="margin-left:16px">Camera &rarr;</a>
+        </header>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <span class="stat-num">{{ stats.total }}</span>
+                <span class="stat-lbl">Total Fines</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num" style="color:#f59e0b">{{ stats.unpaid }}</span>
+                <span class="stat-lbl">Unpaid</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num" style="color:#22c55e">{{ stats.paid }}</span>
+                <span class="stat-lbl">Paid</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num">${{ stats.total_amount }}</span>
+                <span class="stat-lbl">Total Amount</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num" style="color:#22c55e">${{ stats.collected }}</span>
+                <span class="stat-lbl">Collected</span>
+            </div>
+        </div>
+
+        {% if fines %}
+        <div class="table-wrap">
+            <table class="fine-table">
+                <thead>
+                    <tr>
+                        <th>Fine ID</th>
+                        <th>Plate</th>
+                        <th>Owner</th>
+                        <th>Vehicle</th>
+                        <th>Speed</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for f in fines | reverse %}
+                    <tr class="fine-row">
+                        <td class="fine-id">{{ f.id }}</td>
+                        <td class="fine-plate">{{ f.plate }}</td>
+                        <td>{% if f.vehicle %}{{ f.vehicle.owner }}{% else %}N/A{% endif %}</td>
+                        <td>{% if f.vehicle %}{{ f.vehicle.make }} {{ f.vehicle.model }}{% else %}N/A{% endif %}</td>
+                        <td>{{ f.speed }} km/h</td>
+                        <td class="fine-amount">${{ f.amount }}</td>
+                        <td>{{ f.timestamp }}</td>
+                        <td>
+                            <span class="badge {{ 'badge-unpaid' if f.status == 'UNPAID' else 'badge-paid' }}">
+                                {{ f.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/fine/{{ f.id }}" class="btn-sm">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty">
+            <p>No fines issued yet. Go to <a href="/live" class="back-link">Live Camera</a> to start detecting vehicles.</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

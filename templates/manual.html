@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Entry</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Manual Entry</h1>
+            <p>Manually enter plate number and speed to generate a fine</p>
+            <a href="/" class="back-link">&larr; Home</a>
+            <a href="/upload" class="back-link" style="margin-left:16px">Upload Photo &rarr;</a>
+        </header>
+
+        <div class="form-card">
+            {% if error %}
+            <div class="error">{{ error }}</div>
+            {% endif %}
+
+            <form method="post">
+                <div class="form-group">
+                    <label>License Plate Number</label>
+                    <input type="text" name="plate" placeholder="e.g. ABC-123" required class="form-input plate-input" autofocus>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Speed (km/h)</label>
+                        <input type="number" name="speed" value="80" min="0" max="300" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Speed Limit (km/h)</label>
+                        <input type="number" name="limit" value="60" min="0" max="200" class="form-input">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" style="margin-top:20px;width:100%">Generate Fine</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

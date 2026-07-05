@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Speed Camera</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+    .container { max-width: 800px; width: 100%; padding: 2rem; }
+    h1 { color: #f1f5f9; margin-bottom: 0.5rem; font-size: 1.5rem; }
+    p.sub { color: #94a3b8; margin-bottom: 2rem; font-size: 0.9rem; }
+    .card { background: #1e293b; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; border: 1px solid #334155; }
+    label { display: block; color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+    input[type="text"], input[type="password"] { width: 100%; padding: 0.75rem 1rem; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #e2e8f0; font-size: 1rem; }
+    input:focus { outline: none; border-color: #3b82f6; }
+    .btn-primary { background: #3b82f6; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 1rem; cursor: pointer; margin-top: 1rem; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-secondary { display: inline-block; background: #334155; color: #e2e8f0; padding: 0.6rem 1.2rem; border-radius: 8px; text-decoration: none; font-size: 0.9rem; margin-top: 1rem; }
+    .btn-secondary:hover { background: #475569; }
+    .status { padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
+    .status.ok { background: #064e3b; border: 1px solid #10b981; color: #6ee7b7; }
+    .status.missing { background: #451a03; border: 1px solid #f59e0b; color: #fbbf24; }
+    .info { background: #1e293b; border-radius: 12px; padding: 1.5rem; border: 1px solid #334155; font-size: 0.9rem; line-height: 1.6; }
+    .info code { background: #0f172a; padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.85rem; }
+    ol { margin-left: 1.5rem; }
+    ol li { margin-bottom: 0.5rem; }
+    a { color: #60a5fa; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>&#9881; Settings</h1>
+  <p class="sub">Configure integrations for automatic vehicle data lookup</p>
+
+  {% if has_key %}
+  <div class="status ok">&#10003; 2captcha configured (key: {{ masked_key }})</div>
+  {% else %}
+  <div class="status missing">&#9888; 2captcha not configured — vehicle details will use mock data</div>
+  {% endif %}
+
+  <div class="card">
+    <form method="POST">
+      <label for="key">2captcha API Key</label>
+      <input type="password" id="twocaptcha_api_key" name="twocaptcha_api_key"
+             placeholder="Enter your 2captcha API key" value="{{ '' if has_key else '' }}">
+      <button type="submit" class="btn-primary">Save</button>
+    </form>
+  </div>
+
+  <div class="info">
+    <strong>How to get a 2captcha API key:</strong>
+    <ol>
+      <li>Go to <a href="https://2captcha.com/" target="_blank">2captcha.com</a> and register an account</li>
+      <li>Deposit funds (minimum $1 = ~1000 solves)</li>
+      <li>Go to your <a href="https://2captcha.com/enterpage" target="_blank">API settings</a> and copy your API key</li>
+      <li>Paste it above and click Save</li>
+      <li>Each vehicle lookup will cost ~$0.001 (1/10th of a cent)</li>
+    </ol>
+    <p style="margin-top: 1rem; color: #94a3b8;">
+      Once configured, the system will automatically solve the Sindh excise portal reCAPTCHA
+      and fetch real vehicle registration data for K-series (Karachi) plates.
+      Falls back to mock data if the lookup fails or the key is not set.
+    </p>
+  </div>
+
+  <a href="/" class="btn-secondary">&larr; Back to Home</a>
+</div>
+</body>
+</html>

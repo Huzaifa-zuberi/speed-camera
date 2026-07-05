@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Camera System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Speed Camera &amp; Fine Generator</h1>
+            <p>AI-powered license plate recognition, speed detection, and automated traffic fine system</p>
+        </header>
+        <div class="cards">
+            <a href="/live" class="card">
+                <div class="card-icon">📷</div>
+                <h2>Live Camera</h2>
+                <p>Use your webcam to detect plates, measure speed, and issue fines in real-time.</p>
+            </a>
+            <a href="/upload" class="card">
+                <div class="card-icon">📸</div>
+                <h2>Upload Photo</h2>
+                <p>Upload an image of a license plate. Works with camera photos, screenshots, or saved images.</p>
+            </a>
+            <a href="/manual" class="card">
+                <div class="card-icon">⌨️</div>
+                <h2>Manual Entry</h2>
+                <p>Type in the plate number and speed manually to generate a fine with vehicle lookup.</p>
+            </a>
+            <a href="/fines" class="card">
+                <div class="card-icon">📋</div>
+                <h2>Fine Records</h2>
+                <p>View all issued fines with vehicle owner details from the excise database.</p>
+            </a>
+            <a href="/settings" class="card">
+                <div class="card-icon">⚙️</div>
+                <h2>Settings</h2>
+                <p>Configure 2captcha API key for automatic real vehicle data lookup from excise portal.</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
