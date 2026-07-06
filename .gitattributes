@@ -1,0 +1,41 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Source files
+*.cs text diff=csharp
+*.py text diff=python
+*.c text diff=cpp
+*.cpp text diff=cpp
+*.html text diff=html
+*.css text diff=css
+*.js text diff=javascript
+*.sql text diff=sql
+*.md text diff=markdown
+*.json text
+*.yaml text
+*.yml text
+*.xml text
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+
+# Images
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+
+# Archives
+*.zip binary
+*.tar.gz binary
+
+# Docs
+*.pdf binary
+*.docx binary
+*.pptx binary
+
+# Binaries
+*.exe binary
+*.dll binary
+*.so binary
+*.onnx binary

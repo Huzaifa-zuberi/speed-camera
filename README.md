@@ -1,5 +1,17 @@
 # Speed Camera System
 
+[![CI](https://github.com/Huzaifa-zuberi/speed-camera/actions/workflows/ci.yml/badge.svg)](https://github.com/Huzaifa-zuberi/speed-camera/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python)](https://python.org)
+[![License](https://img.shields.io/badge/License-MIT-success)](LICENSE)
+![Last Commit](https://img.shields.io/github/last-commit/Huzaifa-zuberi/speed-camera)
+![Stars](https://img.shields.io/github/stars/Huzaifa-zuberi/speed-camera?style=social)
+
+**Repo:** [Huzaifa-zuberi/speed-camera](https://github.com/Huzaifa-zuberi/speed-camera)
+
+## Screenshots
+
+*(Add a screenshot of the app here)*
+
 AI-powered license plate detection, speed tracking, and traffic fine generator.
 
 ## Features
